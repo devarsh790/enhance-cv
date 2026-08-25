@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ATS CV Pro — Executive Resume Builder & Enhancer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+  <!-- html2pdf bundle for direct 1-click high-res PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- TOP NAVBAR -->
+    <header class="navbar">
+      <div class="navbar-container">
+        <div class="logo">
+          <span class="logo-icon">✦</span>
+          <span class="logo-title">ATS CV <span class="logo-accent">PRO</span></span>
+          <span class="badge-blue">EXECUTIVE EDITION</span>
+        </div>
+        <div class="nav-actions">
+          <button id="create-scratch-btn" class="nav-btn highlight">➕ Create Blank Resume</button>
+          <button id="new-upload-nav-btn" class="nav-btn">🔄 Upload New File</button>
+          <button id="theme-toggle-btn" class="nav-btn theme-toggle">
+            <span id="theme-icon">🌙</span> <span id="theme-label">Dark Mode</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="pulse-dot"></span> GOOGLE XYZ FORMULA • ATS SCANNABLE • DIRECT PDF
+      </div>
+      <h1 class="hero-title">Executive ATS Resume Enhancer & Builder</h1>
+      <p class="hero-subtitle">Create or enhance your resume with authentic ATS-compliant layouts, Google XYZ action bullets, live paper preview, and 1-click high-res PDF exports.</p>
+      
+      <!-- PRESETS & CREATE Scratch BAR -->
+      <div class="preset-bar">
+        <span class="preset-label">STARTER OPTIONS:</span>
+        <button id="hero-blank-btn" class="preset-chip primary-chip">✨ Create Resume From Blank Template</button>
+        <button class="preset-chip" data-preset="swe">💻 Software Engineer</button>
+        <button class="preset-chip" data-preset="pm">🚀 Product Manager</button>
+        <button class="preset-chip" data-preset="data">📊 Data Analyst</button>
+        <button class="preset-chip" data-preset="mkt">🎯 Marketing Lead</button>
+      </div>
+    </section>
+
+    <main class="main-container">
+      <!-- INPUT VIEW -->
+      <section id="input-view" class="panel">
+        <div class="input-grid">
+          <!-- LEFT COLUMN: CV FILE & TEXT -->
+          <div class="input-col">
+            <div class="col-header">
+              <h2>1. Document Input / Scratch Editor</h2>
+              <span class="col-desc">Upload file (.PDF, .DOCX, .TXT) or fill/edit resume text below</span>
+            </div>
+            
+            <div class="drop-zone" id="drop-zone">
+              <input type="file" id="cv-file" accept=".pdf,.docx,.doc,.txt" hidden />
+              <div class="drop-zone-content">
+                <span class="drop-icon">📄</span>
+                <p class="drop-text">Drag & drop your <strong>.PDF, .DOCX, or .TXT</strong> file here</p>
+                <button type="button" id="browse-btn" class="browse-btn-blue">📂 Browse & Select Document File</button>
+                <span id="upload-status" class="upload-status"></span>
+              </div>
+            </div>
+
+            <div class="textarea-wrapper">
+              <div class="textarea-header-row">
+                <label class="field-label" for="cv-text">Resume Editor (Authentic User Text)</label>
+                <button type="button" id="load-guide-template-btn" class="text-link-btn">📋 Load ATS Guided Template</button>
+              </div>
+              <textarea id="cv-text" placeholder="Paste your resume content or type your details here...
+
+FULL NAME
+Location | email@example.com | (555) 000-0000 | linkedin.com/in/yourprofile
+
+PROFESSIONAL SUMMARY
+Experienced professional skilled in strategic project execution, data analysis, and cross-functional leadership...
+
+PROFESSIONAL EXPERIENCE
+Job Title — Company Name (2021 – Present)
+- Accomplished [X], as measured by [Y], by doing [Z]
+- Spearheaded team initiative that reduced costs by 20%
+- Optimized key operational processes...
+
+EDUCATION
+Degree Name — University Name (Graduation Year)"></textarea>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: TARGET ROLE & JOB MATCHING -->
+          <div class="input-col">
+            <div class="col-header">
+              <h2>2. Target Job & Optimization</h2>
+              <span class="col-desc">Match keywords against target job description</span>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="target-role">Target Job Title (Optional)</label>
+              <input type="text" id="target-role" placeholder="e.g. Project Manager / Marketing Specialist / Developer" />
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="job-desc">Job Description / Requirements (Optional)</label>
+              <textarea id="job-desc" class="short-textarea" placeholder="Paste target job listing here to analyze missing ATS keywords, hard skills, and experience gaps..."></textarea>
+            </div>
+
+            <div class="action-card">
+              <div class="action-info">
+                <h3>⚡ Generate Executive Paper Resume</h3>
+                <p>Calculates ATS score, formats Google XYZ bullets, and renders pure white paper document.</p>
+              </div>
+              <button id="enhance-btn" class="primary-btn-blue">
+                <span id="btn-text">⚡ ENHANCE & PREVIEW EXECUTIVE RESUME</span>
+              </button>
+              <p id="error-msg" class="error-msg"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LOADING VIEW -->
+      <section id="loading-view" class="panel hidden">
+        <div class="loading-container">
+          <div class="spinner-blue"></div>
+          <h3 class="loading-title">Formatting ATS Resume...</h3>
+          <p id="loading-step" class="loading-step">Scanning ATS structural layout and section compliance...</p>
+          <div class="loading-progress">
+            <div class="progress-bar-inner"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESULTS VIEW -->
+      <section id="results-view" class="panel hidden">
+        <!-- SCORE & OVERVIEW BANNER -->
+        <div class="results-banner">
+          <div class="score-container">
+            <div class="score-circle">
+              <span id="score-number" class="score-val">--</span>
+              <span class="score-max">/100</span>
+            </div>
+            <div class="score-meta">
+              <span id="score-verdict" class="score-verdict">ATS SCANNABLE</span>
+              <span class="score-subtext">Overall ATS Resume Readiness Score</span>
+            </div>
+          </div>
+
+          <div class="breakdown-grid">
+            <div class="meter-card">
+              <div class="meter-header">
+                <span>📐 Structure & Format</span>
+                <strong id="m-format">--%</strong>
+              </div>
+              <div class="meter-bar"><div id="bar-format" class="meter-fill" style="width: 0%"></div></div>
+            </div>
+
+            <div class="meter-card">
+              <div class="meter-header">
+                <span>⚡ Action Verbs</span>
+                <strong id="m-verbs">--%</strong>
+              </div>
+              <div class="meter-bar"><div id="bar-verbs" class="meter-fill" style="width: 0%"></div></div>
+            </div>
+
+            <div class="meter-card">
+              <div class="meter-header">
+                <span>📊 Quantified Metrics</span>
+                <strong id="m-impact">--%</strong>
+              </div>
+              <div class="meter-bar"><div id="bar-impact" class="meter-fill" style="width: 0%"></div></div>
+            </div>
+
+            <div class="meter-card">
+              <div class="meter-header">
+                <span>🔑 Keyword Match</span>
+                <strong id="m-keywords">--%</strong>
+              </div>
+              <div class="meter-bar"><div id="bar-keywords" class="meter-fill" style="width: 0%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUMMARY STATEMENT -->
+        <div class="summary-box">
+          <h3>📋 Executive AI Assessment</h3>
+          <p id="summary-text"></p>
+        </div>
+
+        <!-- TABS NAV -->
+        <div class="tabs-nav">
+          <button class="tab-btn active" data-tab="paper">📄 Executive Paper Preview & PDF Export</button>
+          <button class="tab-btn" data-tab="bullets">⚡ Bullet Rewrites (Google XYZ)</button>
+          <button class="tab-btn" data-tab="guide">💡 Real-Life ATS Guide</button>
+          <button class="tab-btn" data-tab="overview">📊 Executive Audit</button>
+          <button class="tab-btn" data-tab="keywords">🔑 Keywords & Match</button>
+        </div>
+
+        <!-- TAB 1: PAPER PREVIEW & DIRECT PDF EXPORT -->
+        <div id="tab-paper" class="tab-content active">
+          <div class="paper-toolbar">
+            <div class="toolbar-left">
+              <button id="toolbar-new-upload-btn" class="btn-blue-highlight" style="background: var(--card); color: var(--text-primary); border: 1px solid var(--border);">🔄 Upload New File</button>
+              <span class="toolbar-label">TEMPLATE:</span>
+              <button class="template-btn active" data-tpl="harvard">🎓 Harvard Classic</button>
+              <button class="template-btn" data-tpl="modern">💻 Modern Tech</button>
+              <button class="template-btn" data-tpl="minimal">✨ Minimalist Pro</button>
+            </div>
+            <div class="toolbar-right">
+              <button id="download-pdf-btn" class="btn-blue-highlight">⚡ Download PDF File</button>
+              <button id="print-pdf-btn" class="btn-outline-theme">🖨️ Save as PDF (Native)</button>
+              <button id="download-md-btn" class="btn-outline-theme">⬇️ Markdown (.md)</button>
+              <button id="copy-btn" class="btn-outline-theme">📋 Copy Text</button>
+            </div>
+          </div>
+
+          <!-- PURE WHITE DOCUMENT PREVIEW SHEET -->
+          <div class="paper-container">
+            <div class="paper-float-bar">
+              <span class="paper-status-tag">📄 LIVE PRINT/PDF READY SHEET</span>
+              <div style="display: flex; gap: 8px;">
+                <button id="direct-paper-pdf-btn" class="btn-blue-highlight">⚡ Export PDF File</button>
+                <button id="direct-print-pdf-btn" class="btn-outline-theme">🖨️ Save as PDF (Print)</button>
+              </div>
+            </div>
+            <div id="paper-document" class="paper-sheet tpl-harvard">
+              <div id="paper-content" class="paper-body"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: BULLET REWRITES -->
+        <div id="tab-bullets" class="tab-content">
+          <div class="tab-intro">
+            <h3>Google XYZ Power Bullet Rewrites</h3>
+            <p>Formula: <strong>"Accomplished [X], as measured by [Y], by doing [Z]"</strong></p>
+          </div>
+          <div id="bullets-list" class="bullets-container"></div>
+        </div>
+
+        <!-- TAB 3: REAL LIFE ATS GUIDE -->
+        <div id="tab-guide" class="tab-content">
+          <div class="card-mono full-width">
+            <h3>💡 Real-Life Step-by-Step Guide: How to Make an ATS-Friendly Resume</h3>
+            <p class="card-sub" style="margin-bottom: 20px;">Follow these golden rules used by Fortune 500 recruiters and top ATS software (Workday, Taleo, Greenhouse, Lever):</p>
+            
+            <div class="ats-tips-grid">
+              <div class="tip-box">
+                <strong>1. Contact Info Format</strong>
+                <p>Put your Name, Phone, Email, Location (City, State), and LinkedIn link on single lines. <strong>DO NOT</strong> put contact info inside headers/footers or image graphics — ATS parsers cannot read header text!</p>
+              </div>
+
+              <div class="tip-box">
+                <strong>2. Google XYZ Bullet Formula</strong>
+                <p>Structure bullet points using Google's formula: <em>"Accomplished [X], as measured by [Y], by doing [Z]"</em>. Always quantify results with numbers (%, $, hours saved, team size).</p>
+              </div>
+
+              <div class="tip-box">
+                <strong>3. Standard Section Headings</strong>
+                <p>Use simple, recognizable section headings: <em>Professional Summary, Professional Experience, Skills, Education</em>. Avoid clever names like "My Journey" or "What I Do".</p>
+              </div>
+
+              <div class="tip-box">
+                <strong>4. Single-Column Layout</strong>
+                <p>Multi-column tables, sidebars, and graphics scramble text when processed by Taleo/Workday. Always use a clean single-column paper flow.</p>
+              </div>
+
+              <div class="tip-box">
+                <strong>5. Exact Skill Keywords</strong>
+                <p>Include exact hard skills mentioned in the job post both in your <em>Skills</em> section and inside your <em>Work Experience</em> bullets (e.g. Project Management, SQL, Python).</p>
+              </div>
+
+              <div class="tip-box">
+                <strong>6. PDF / DOCX Export</strong>
+                <p>Always export your document as a standard vector PDF or clean DOCX file. Avoid image-based PDF scans or PNG image resumes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: OVERVIEW & AUDIT -->
+        <div id="tab-overview" class="tab-content">
+          <div class="two-col-grid">
+            <div class="card-mono">
+              <h3 class="card-title text-success">✓ STRENGTHS DETECTED</h3>
+              <ul id="strengths-list" class="styled-list"></ul>
+            </div>
+            <div class="card-mono">
+              <h3 class="card-title text-warning">⚠️ WEAKNESSES TO FIX</h3>
+              <ul id="weaknesses-list" class="styled-list"></ul>
+            </div>
+          </div>
+
+          <div class="card-mono full-width">
+            <h3 class="card-title">📌 SECTION-BY-SECTION ATS AUDIT</h3>
+            <div id="section-feedback" class="feedback-grid"></div>
+          </div>
+        </div>
+
+        <!-- TAB 5: KEYWORDS & MATCH -->
+        <div id="tab-keywords" class="tab-content">
+          <div class="two-col-grid">
+            <div class="card-mono">
+              <h3>🔑 High-Impact Keywords to Include</h3>
+              <p class="card-sub">Add these exact phrases into your Skills & Work Experience sections to boost ATS keyword ranking.</p>
+              <div id="keywords-chips" class="chip-container"></div>
+            </div>
+            <div class="card-mono">
+              <h3>🎯 ATS Keyword Strategy</h3>
+              <ul class="styled-list">
+                <li>Place your core keywords in both the <strong>Skills</strong> section and inside individual <strong>Experience bullets</strong>.</li>
+                <li>Write out both acronyms and full names (e.g. <em>Search Engine Optimization (SEO)</em>).</li>
+                <li>Avoid stuffing keywords contextlessly; integrate them naturally into achievements.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTTOM ACTION ROW -->
+        <div class="bottom-actions">
+          <button id="back-btn" class="btn-outline-theme">← Back to Editor</button>
+          <button id="top-btn" class="btn-outline-theme">↑ Scroll to Top</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- FLOATING AI ASSISTANT CHAT BOT -->
+    <div id="ai-chat-widget" class="ai-chat-widget">
+      <button id="chat-toggle-btn" class="chat-toggle-btn">
+        <span class="chat-bot-icon">✦</span>
+        <span class="chat-bot-label">ATS AI Assistant</span>
+      </button>
+
+      <div id="chat-drawer" class="chat-drawer hidden">
+        <div class="chat-header">
+          <div class="chat-title-group">
+            <span class="chat-badge-icon">✦</span>
+            <div>
+              <strong class="chat-bot-title">ATS Executive Coach</strong>
+              <span class="chat-bot-status">● Live AI Career Assistant</span>
+            </div>
+          </div>
+          <button id="chat-close-btn" class="chat-close-btn">✕</button>
+        </div>
+
+        <div id="chat-messages" class="chat-messages">
+          <div class="chat-msg bot">
+            <p>Hello! I am your <strong>ATS Executive Coach</strong>. How can I help you refine your resume, write bullet points, or optimize for target roles today?</p>
+          </div>
+        </div>
+
+        <div class="chat-chips-bar">
+          <button class="chat-chip" data-prompt="Explain Google's XYZ bullet formula.">💡 Google XYZ Formula</button>
+          <button class="chat-chip" data-prompt="How can I increase my ATS score?">⚡ Boost ATS Score</button>
+          <button class="chat-chip" data-prompt="How do I write a compelling summary?">📋 Write Summary</button>
+        </div>
+
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Ask AI Coach a question..." />
+          <button id="chat-send-btn" class="chat-send-btn">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer-theme">
+      <p>ATS CV Pro • Executive Resume Enhancer & Direct PDF Export Engine • Light & Dark Theme System</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
