@@ -146,6 +146,16 @@ const els = {
   enhanceBtn: document.getElementById('enhance-btn'),
   errorMsg: document.getElementById('error-msg'),
   
+  // MNC ATS Elements
+  mncTierBadge: document.getElementById('mnc-tier-badge'),
+  p1Status: document.getElementById('p1-status'),
+  p2Status: document.getElementById('p2-status'),
+  p3Status: document.getElementById('p3-status'),
+  p4Status: document.getElementById('p4-status'),
+  skillMatchPct: document.getElementById('skill-match-pct'),
+  matchedSkillsList: document.getElementById('matched-skills-list'),
+  missingSkillsList: document.getElementById('missing-skills-list'),
+
   // Results Elements
   scoreNumber: document.getElementById('score-number'),
   scoreVerdict: document.getElementById('score-verdict'),
@@ -229,13 +239,26 @@ function showView(view) {
 }
 
 // ---- Create Blank Resume & New Upload Actions ----
+function createBlankResumeSheet() {
+  els.cvText.value = '';
+  els.targetRole.value = '';
+  els.jobDesc.value = '';
+  els.errorMsg.textContent = '';
+  els.uploadStatus.textContent = '✨ Blank Resume Sheet Created — Use tools below to build your resume!';
+  showView(els.inputView);
+  els.cvText.focus();
+  updateEditorStats();
+  window.scrollTo({ top: els.inputView.offsetTop - 20, behavior: 'smooth' });
+}
+
 function loadStarterTemplate() {
   els.cvText.value = GUIDED_STARTER_TEMPLATE;
   els.targetRole.value = '';
   els.jobDesc.value = '';
   els.errorMsg.textContent = '';
-  els.uploadStatus.textContent = '✨ Loaded ATS Blank Resume Starter Template';
+  els.uploadStatus.textContent = '📋 Loaded ATS Blank Guided Resume Starter Template';
   showView(els.inputView);
+  updateEditorStats();
   window.scrollTo({ top: els.inputView.offsetTop - 20, behavior: 'smooth' });
 }
 
@@ -246,11 +269,109 @@ function triggerNewUpload() {
   els.cvFile.click();
 }
 
-if (els.createScratchBtn) els.createScratchBtn.addEventListener('click', loadStarterTemplate);
-if (els.heroBlankBtn) els.heroBlankBtn.addEventListener('click', loadStarterTemplate);
+if (els.createScratchBtn) els.createScratchBtn.addEventListener('click', createBlankResumeSheet);
+if (els.heroBlankBtn) els.heroBlankBtn.addEventListener('click', createBlankResumeSheet);
 if (els.loadGuideTemplateBtn) els.loadGuideTemplateBtn.addEventListener('click', loadStarterTemplate);
 if (els.newUploadNavBtn) els.newUploadNavBtn.addEventListener('click', triggerNewUpload);
 if (els.toolbarNewUploadBtn) els.toolbarNewUploadBtn.addEventListener('click', triggerNewUpload);
+
+const clearCanvasBtn = document.getElementById('clear-canvas-btn');
+if (clearCanvasBtn) clearCanvasBtn.addEventListener('click', createBlankResumeSheet);
+
+// ---- Resume Creator Suite Editing Tools ----
+const SECTION_TEMPLATES = {
+  contact: `YOUR FULL NAME
+City, State | email@example.com | (555) 000-0000 | linkedin.com/in/yourprofile\n\n`,
+  summary: `## PROFESSIONAL SUMMARY
+Results-driven professional with demonstrated experience in strategic project execution, operational optimization, and team leadership. Skilled in data analysis, process redesign, and cross-functional project management.\n\n`,
+  exp: `## PROFESSIONAL EXPERIENCE
+Job Title — Company Name | City, State (2022 – Present)
+- Accomplished [X], as measured by [Y], by doing [Z] (e.g. Spearheaded project rollout that increased productivity by 25%)
+- Orchestrated daily team workflows and reduced operational delays by 30% through process optimization
+- Collaborated with senior leadership to track core KPIs and deliver key strategic milestones\n\n`,
+  xyz: `- Accomplished [X], as measured by [Y], by doing [Z]\n`,
+  skills: `## TECHNICAL SKILLS & CORE COMPETENCIES
+- Hard Skills & Stack: Project Management, Data Analysis, Process Optimization, Strategic Planning
+- Tools & Software: MS Excel (Pivot Tables/VBA), Python, SQL, CRM Systems, Google Analytics
+- Soft Skills: Leadership, Problem Solving, Strategic Communication, Team Collaboration\n\n`,
+  edu: `## EDUCATION & CERTIFICATIONS
+Bachelor of Science / Business Administration — Accredited University (Graduation Year)
+- Relevant Academic Coursework & Honors
+- Professional Certification / ATS-Compliant Credentials\n\n`,
+  projects: `## KEY PROJECTS & ACHIEVEMENTS
+Enterprise System Optimization Project — Lead Specialist (2023)
+- Spearheaded end-to-end workflow overhaul resulting in 40% efficiency gains across 5 departments\n\n`
+};
+
+function insertTextAtCursor(textarea, textToInsert) {
+  if (!textarea) return;
+  textarea.focus();
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const val = textarea.value;
+
+  const prefix = (start > 0 && val.charAt(start - 1) !== '\n' && !textToInsert.startsWith('\n')) ? '\n' : '';
+  const insertContent = prefix + textToInsert;
+
+  textarea.value = val.substring(0, start) + insertContent + val.substring(end);
+  const newPos = start + insertContent.length;
+  textarea.selectionStart = newPos;
+  textarea.selectionEnd = newPos;
+  updateEditorStats();
+}
+
+// Wire up section inserter toolbar buttons
+document.querySelectorAll('.editor-toolbar-suite .tool-btn[data-tool]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const tKey = btn.dataset.tool;
+    if (SECTION_TEMPLATES[tKey]) {
+      insertTextAtCursor(els.cvText, SECTION_TEMPLATES[tKey]);
+    }
+  });
+});
+
+// Wire up formatting toolbar buttons
+document.querySelectorAll('.editor-toolbar-suite .fmt-btn[data-fmt]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const fmt = btn.dataset.fmt;
+    const textarea = els.cvText;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = textarea.value.substring(start, end);
+
+    if (fmt === 'bold') {
+      insertTextAtCursor(textarea, `**${selected || 'bold text'}**`);
+    } else if (fmt === 'italic') {
+      insertTextAtCursor(textarea, `*${selected || 'italic text'}*`);
+    } else if (fmt === 'bullet') {
+      insertTextAtCursor(textarea, `- ${selected || 'Bullet item text'}`);
+    } else if (fmt === 'h2') {
+      insertTextAtCursor(textarea, `\n## ${selected || 'NEW SECTION TITLE'}\n`);
+    } else if (fmt === 'hr') {
+      insertTextAtCursor(textarea, `\n---\n`);
+    }
+  });
+});
+
+// Live Stats Counter
+function updateEditorStats() {
+  const text = els.cvText ? els.cvText.value.trim() : '';
+  const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+  const bullets = text ? text.split('\n').filter(l => l.trim().startsWith('-') || l.trim().startsWith('•') || l.trim().startsWith('*')).length : 0;
+  const metrics = text ? (text.match(/\d+%|\$\d+|\d+\+|\d+x|\d+ years|\d+ users|\d+ team/gi) || []).length : 0;
+
+  const statWords = document.getElementById('stat-words');
+  const statBullets = document.getElementById('stat-bullets');
+  const statMetrics = document.getElementById('stat-metrics');
+
+  if (statWords) statWords.textContent = `Words: ${words}`;
+  if (statBullets) statBullets.textContent = `Bullets: ${bullets}`;
+  if (statMetrics) statMetrics.textContent = `Metrics Detected: ${metrics}`;
+}
+
+if (els.cvText) {
+  els.cvText.addEventListener('input', updateEditorStats);
+}
 
 // ---- Presets Loader ----
 document.querySelectorAll('.preset-chip[data-preset]').forEach((chip) => {
@@ -262,6 +383,7 @@ document.querySelectorAll('.preset-chip[data-preset]').forEach((chip) => {
       els.jobDesc.value = PRESETS[pKey].job;
       els.errorMsg.textContent = '';
       els.uploadStatus.textContent = `✓ Loaded sample preset: ${PRESETS[pKey].role}`;
+      updateEditorStats();
     }
   });
 });
@@ -333,10 +455,10 @@ els.enhanceBtn.addEventListener('click', async () => {
   showView(els.loadingView);
   
   const steps = [
-    'Scanning ATS formatting and section boundaries...',
-    'Evaluating Google XYZ action verbs & metrics density...',
-    'Checking target role keyword alignment...',
-    'Formatting 100% ATS-compliant pure paper document...'
+    'Scanning Priority #1: Technical & Hard Skills coverage...',
+    'Analyzing Priority #2: Google XYZ Action Verbs & Metrics...',
+    'Validating Priority #3: Education & Credentials...',
+    'Checking Priority #4: Single-column ATS scannability...'
   ];
   let stepIdx = 0;
   const interval = setInterval(() => {
@@ -374,15 +496,25 @@ function renderResults(data) {
   const score = data.overall_score ?? 80;
   els.scoreNumber.textContent = score;
 
-  if (score >= 85) {
-    els.scoreVerdict.textContent = 'EXCELLENT • TOP 5% ATS READINESS';
-  } else if (score >= 70) {
-    els.scoreVerdict.textContent = 'GOOD • PASSES ATS THRESHOLD';
-  } else {
-    els.scoreVerdict.textContent = 'NEEDS ENHANCEMENT • ATS RISK';
+  if (els.mncTierBadge) {
+    els.mncTierBadge.textContent = data.mnc_tier || (score >= 88 ? '🏆 TOP 5% MNC SHORTLIST TIER' : (score >= 75 ? '✅ COMPETITIVE MNC ATS CANDIDATE' : '⚠️ ATS FILTER RISK'));
   }
 
-  const bd = data.ats_breakdown || { formatting: 90, impact: 70, action_verbs: 75, keywords: 80 };
+  if (score >= 88) {
+    els.scoreVerdict.textContent = 'EXCELLENT • TOP 5% MNC SHORTLIST';
+  } else if (score >= 75) {
+    els.scoreVerdict.textContent = 'GOOD • PASSES MNC ATS THRESHOLD';
+  } else {
+    els.scoreVerdict.textContent = 'NEEDS ENHANCEMENT • ATS FILTER RISK';
+  }
+
+  const pb = data.priority_breakdown || {};
+  if (els.p1Status && pb.priority_1_skills) els.p1Status.textContent = pb.priority_1_skills.status || 'Skills Evaluated';
+  if (els.p2Status && pb.priority_2_experience) els.p2Status.textContent = pb.priority_2_experience.status || 'Impact Evaluated';
+  if (els.p3Status && pb.priority_3_education) els.p3Status.textContent = pb.priority_3_education.status || 'Verified';
+  if (els.p4Status && pb.priority_4_parsability) els.p4Status.textContent = pb.priority_4_parsability.status || 'Scannable';
+
+  const bd = data.ats_breakdown || { formatting: 95, impact: 85, action_verbs: 80, keywords: 85 };
   
   els.mFormat.textContent = `${bd.formatting}%`;
   els.barFormat.style.width = `${bd.formatting}%`;
@@ -395,6 +527,28 @@ function renderResults(data) {
 
   els.mKeywords.textContent = `${bd.keywords}%`;
   els.barKeywords.style.width = `${bd.keywords}%`;
+
+  // Priority 1 Skills Scanner UI Rendering
+  const sa = data.skills_analysis || {};
+  if (els.skillMatchPct) els.skillMatchPct.textContent = `${sa.skill_match_percentage ?? 80}%`;
+
+  const matched = sa.matched_skills || ['Project Management', 'Communication'];
+  if (els.matchedSkillsList) {
+    els.matchedSkillsList.innerHTML = matched.map(s => `
+      <span class="chip-green">✓ ${escapeHtml(s)}</span>
+    `).join('');
+  }
+
+  const missing = sa.missing_critical_skills || [];
+  if (els.missingSkillsList) {
+    if (missing.length === 0) {
+      els.missingSkillsList.innerHTML = '<span class="chip-green">✨ All Key Technical Skills Found in Resume!</span>';
+    } else {
+      els.missingSkillsList.innerHTML = missing.map(s => `
+        <button class="chip-missing" onclick="addSkillToResume('${escapeJs(s)}')">+ ${escapeHtml(s)} <small>(Add to CV)</small></button>
+      `).join('');
+    }
+  }
 
   els.summaryText.textContent = data.summary || '';
 
@@ -429,6 +583,283 @@ function renderResults(data) {
 
   currentEnhancedCvMd = data.enhanced_cv_markdown || '';
   els.paperContent.innerHTML = markdownToHtml(currentEnhancedCvMd);
+
+  renderRoleRecommendations(data);
+  renderSectionRecommendations(data);
+}
+
+function renderRoleRecommendations(data) {
+  const recs = data.role_recommendations;
+  const roleBanner = document.getElementById('role-recommendations-banner');
+  const targetGapCard = document.getElementById('target-role-gap-card');
+
+  if (recs && recs.best_role) {
+    const best = recs.best_role;
+    const bestTitleEl = document.getElementById('best-role-title');
+    const bestScoreEl = document.getElementById('best-role-match-pct');
+    const bestReasonEl = document.getElementById('best-role-reason');
+    const bestMissingTag = document.getElementById('best-role-name-tag');
+    const bestMissingChips = document.getElementById('best-role-missing-chips');
+    const recCards = document.getElementById('recommended-roles-cards');
+
+    if (bestTitleEl) bestTitleEl.textContent = best.title;
+    if (bestScoreEl) bestScoreEl.textContent = `${best.match_percentage}%`;
+    if (bestReasonEl) bestReasonEl.textContent = best.reason;
+    if (bestMissingTag) bestMissingTag.textContent = best.title;
+
+    if (bestMissingChips) {
+      const missing = best.missing_skills_to_100_pct || [];
+      if (missing.length === 0) {
+        bestMissingChips.innerHTML = '<span class="chip-green">✨ 100% Skill Match! You possess all core skills for this role.</span>';
+      } else {
+        bestMissingChips.innerHTML = missing.map(s => `
+          <button class="chip-missing" onclick="addSkillToResume('${escapeJs(s)}')">+ ${escapeHtml(s)} <small>(Add to CV)</small></button>
+        `).join('');
+      }
+    }
+
+    if (recCards && recs.recommended_roles) {
+      recCards.innerHTML = recs.recommended_roles.map((r, i) => `
+        <div class="role-card-mini ${i === 0 ? 'top-match' : ''}">
+          <div class="role-card-top">
+            <span class="role-card-rank">#${i + 1} ${i === 0 ? 'BEST FIT' : 'MATCH'}</span>
+            <strong class="role-card-pct">${r.matchPercentage}%</strong>
+          </div>
+          <h4 class="role-card-title">${escapeHtml(r.title)}</h4>
+          <p class="role-card-desc">${escapeHtml(r.description || '')}</p>
+        </div>
+      `).join('');
+    }
+
+    if (roleBanner) roleBanner.style.display = 'block';
+  } else if (roleBanner) {
+    roleBanner.style.display = 'none';
+  }
+
+  const gap = recs?.target_role_gap;
+  if (gap && gap.target_role) {
+    const titleTag = document.getElementById('target-role-title-tag');
+    const verdictEl = document.getElementById('target-role-verdict');
+    const scoreEl = document.getElementById('target-role-score');
+    const matchedContainer = document.getElementById('target-matched-skills');
+    const missingContainer = document.getElementById('target-missing-skills');
+
+    if (titleTag) titleTag.textContent = gap.target_role;
+    if (verdictEl) verdictEl.textContent = gap.role_gap_verdict || '';
+    if (scoreEl) scoreEl.textContent = `${gap.target_role_match_score || 80}%`;
+
+    if (matchedContainer) {
+      const matched = gap.matched_skills_for_role || [];
+      matchedContainer.innerHTML = matched.length > 0 
+        ? matched.map(s => `<span class="chip-green">✓ ${escapeHtml(s)}</span>`).join('')
+        : '<span class="chip-mono">No matching hard skills detected yet</span>';
+    }
+
+    if (missingContainer) {
+      const missing = gap.missing_critical_skills_for_role || [];
+      missingContainer.innerHTML = missing.length > 0
+        ? missing.map(s => `<button class="chip-missing" onclick="addSkillToResume('${escapeJs(s)}')">+ ${escapeHtml(s)} <small>(Add to CV)</small></button>`).join('')
+        : '<span class="chip-green">✨ Zero missing skills for this target role!</span>';
+    }
+
+    if (targetGapCard) targetGapCard.style.display = 'block';
+  } else if (targetGapCard) {
+    targetGapCard.style.display = 'none';
+  }
+
+  renderParsedSections(data);
+}
+
+function renderParsedSections(data) {
+  const sec = data.parsed_sections;
+  if (!sec) return;
+
+  const cBody = document.getElementById('sec-contact-body');
+  const sBody = document.getElementById('sec-summary-body');
+  const eBody = document.getElementById('sec-education-body');
+  const iBody = document.getElementById('sec-internships-body');
+  const wBody = document.getElementById('sec-experience-body');
+  const kBody = document.getElementById('sec-skills-body');
+  const pBody = document.getElementById('sec-projects-body');
+
+  if (cBody) {
+    const c = sec.contact || {};
+    cBody.innerHTML = `
+      <div class="sec-contact-grid">
+        <div><strong>Full Name:</strong> ${escapeHtml(c.name || 'Candidate Name')}</div>
+        <div><strong>Email:</strong> ${escapeHtml(c.email || 'Email Not Specified')}</div>
+        <div><strong>Phone:</strong> ${escapeHtml(c.phone || 'Phone Not Specified')}</div>
+        <div><strong>Location:</strong> ${escapeHtml(c.location || 'Location Not Specified')}</div>
+        <div><strong>LinkedIn:</strong> ${escapeHtml(c.linkedin || 'LinkedIn Not Specified')}</div>
+      </div>
+    `;
+  }
+
+  if (sBody) {
+    sBody.innerHTML = `<p class="sec-text-content">${escapeHtml(sec.summary || 'Summary not provided.')}</p>`;
+  }
+
+  if (eBody) {
+    const list = sec.education || [];
+    eBody.innerHTML = list.length > 0
+      ? `<ul class="sec-list-items">${list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
+      : '<p class="sec-empty-text">No educational details specified.</p>';
+  }
+
+  if (iBody) {
+    const list = sec.internships || [];
+    iBody.innerHTML = list.length > 0
+      ? `<ul class="sec-list-items">${list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
+      : '<p class="sec-empty-text">No internship details specified.</p>';
+  }
+
+  if (wBody) {
+    const list = sec.experience || [];
+    wBody.innerHTML = list.length > 0
+      ? `<ul class="sec-list-items">${list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
+      : '<p class="sec-empty-text">No work experience entries specified.</p>';
+  }
+
+  if (kBody) {
+    const list = sec.skills || [];
+    const matched = data.skills_analysis?.matched_skills || [];
+    kBody.innerHTML = `
+      <div class="sec-skills-wrapper">
+        <div style="margin-bottom: 8px;"><strong>Matched Technical Stack:</strong></div>
+        <div class="chip-container" style="margin-bottom: 12px;">
+          ${matched.map(s => `<span class="chip-green">✓ ${escapeHtml(s)}</span>`).join('')}
+        </div>
+        ${list.length > 0 ? `<ul class="sec-list-items">${list.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''}
+      </div>
+    `;
+  }
+
+  if (pBody) {
+    const proj = sec.projects || [];
+    const cert = sec.certifications || [];
+    pBody.innerHTML = `
+      <div class="sec-dual-column">
+        <div>
+          <strong style="display: block; margin-bottom: 6px;">Key Projects:</strong>
+          <ul class="sec-list-items">${proj.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul>
+        </div>
+        <div style="margin-top: 12px;">
+          <strong style="display: block; margin-bottom: 6px;">Certifications & Credentials:</strong>
+          <ul class="sec-list-items">${cert.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul>
+        </div>
+      </div>
+    `;
+  }
+}
+
+let currentSectionRecommendations = [];
+
+function renderSectionRecommendations(data) {
+  const container = document.getElementById('recommended-sections-container');
+  if (!container) return;
+
+  const list = data.section_recommendations || [];
+  currentSectionRecommendations = list;
+
+  if (list.length === 0) {
+    container.innerHTML = '<p class="sec-empty-text">No section recommendations generated.</p>';
+    return;
+  }
+
+  container.innerHTML = list.map(rec => `
+    <div class="rec-section-card">
+      <div class="rec-card-header">
+        <div class="rec-card-title-group">
+          <h3>${escapeHtml(rec.section_title)}</h3>
+          <span class="rec-status-badge">${escapeHtml(rec.status)}</span>
+        </div>
+        <button class="apply-rec-btn" onclick="applySectionRecommendation('${escapeJs(rec.section_id)}', '${escapeJs(rec.recommendation)}')">
+          ⚡ Apply Recommendation to CV
+        </button>
+      </div>
+
+      <div class="rec-card-split">
+        <div class="rec-col current">
+          <span class="col-tag">CURRENT PARSED INPUT</span>
+          <pre class="rec-pre">${escapeHtml(rec.current)}</pre>
+        </div>
+        <div class="rec-col recommended">
+          <span class="col-tag highlight">💡 RECOMMENDED PROFESSIONAL UPGRADE</span>
+          <div class="rec-recommendation-body">${markdownToHtml(rec.recommendation)}</div>
+        </div>
+      </div>
+
+      <div class="rec-tip-box">
+        💡 <strong>Pro ATS Strategy:</strong> ${escapeHtml(rec.tip)}
+      </div>
+    </div>
+  `).join('');
+
+  const applyAllBtn = document.getElementById('apply-all-recs-btn');
+  if (applyAllBtn && !applyAllBtn.dataset.bound) {
+    applyAllBtn.dataset.bound = 'true';
+    applyAllBtn.addEventListener('click', applyAllSectionRecommendations);
+  }
+}
+
+function applySectionRecommendation(sectionId, recContent) {
+  if (!els.cvText) return;
+  const val = els.cvText.value.trim();
+
+  if (val.includes(recContent.trim())) {
+    showToast(`"${sectionId.toUpperCase()}" recommendation is already present in your CV text!`);
+    return;
+  }
+
+  els.cvText.value += `\n\n${recContent}`;
+  updateEditorStats();
+  showToast(`⚡ Applied recommended ${sectionId.toUpperCase()} upgrade to your CV text! Click "ENHANCE & PREVIEW" to re-score.`);
+}
+
+function applyAllSectionRecommendations() {
+  if (!currentSectionRecommendations || currentSectionRecommendations.length === 0) return;
+  if (!els.cvText) return;
+
+  let addedCount = 0;
+  currentSectionRecommendations.forEach(rec => {
+    if (rec.recommendation && !els.cvText.value.includes(rec.recommendation.trim())) {
+      els.cvText.value += `\n\n${rec.recommendation}`;
+      addedCount++;
+    }
+  });
+
+  updateEditorStats();
+  if (addedCount > 0) {
+    showToast(`⚡ Applied all ${addedCount} section recommendations to your CV text! Click ENHANCE to re-score.`);
+  } else {
+    showToast(`All section recommendations are already present in your CV!`);
+  }
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('ats-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'ats-toast';
+    toast.className = 'ats-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3500);
+}
+
+function addSkillToResume(skill) {
+  if (els.cvText) {
+    if (!els.cvText.value.includes(skill)) {
+      els.cvText.value += `\n- Proficient in ${skill} and related technologies.`;
+      alert(`✨ Added "${skill}" to your resume text! Click "ENHANCE & PREVIEW" to re-calculate your ATS score.`);
+    } else {
+      alert(`"${skill}" is already present in your resume text.`);
+    }
+  }
 }
 
 function copySingleBullet(btn, text) {
@@ -482,13 +913,28 @@ document.querySelectorAll('.template-btn').forEach((btn) => {
   });
 });
 
+function activateTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach((b) => {
+    if (b.dataset.tab === tabId) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+  document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
+  const targetTab = document.getElementById(`tab-${tabId}`);
+  if (targetTab) {
+    targetTab.classList.add('active');
+    targetTab.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+const bannerJumpBtn = document.getElementById('banner-view-rec-sections-btn');
+if (bannerJumpBtn) {
+  bannerJumpBtn.addEventListener('click', () => activateTab('rec-sections'));
+}
+
 // ---- Tabs Navigation ----
 document.querySelectorAll('.tab-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+    activateTab(btn.dataset.tab);
   });
 });
 

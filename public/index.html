@@ -73,25 +73,46 @@
 
             <div class="textarea-wrapper">
               <div class="textarea-header-row">
-                <label class="field-label" for="cv-text">Resume Editor (Authentic User Text)</label>
-                <button type="button" id="load-guide-template-btn" class="text-link-btn">📋 Load ATS Guided Template</button>
+                <label class="field-label" for="cv-text">Resume Editor & Creator Suite</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <span id="editor-mode-badge" class="badge-mode">✨ BLANK CANVAS CREATOR</span>
+                  <button type="button" id="load-guide-template-btn" class="text-link-btn">📋 Load ATS Guided Template</button>
+                </div>
               </div>
-              <textarea id="cv-text" placeholder="Paste your resume content or type your details here...
 
-FULL NAME
-Location | email@example.com | (555) 000-0000 | linkedin.com/in/yourprofile
+              <!-- RESUME CREATOR EDITING SUITE TOOLBAR -->
+              <div class="editor-toolbar-suite">
+                <div class="toolbar-group">
+                  <span class="tb-label">INSERT SECTIONS:</span>
+                  <button type="button" class="tool-btn" data-tool="contact" title="Insert Contact & Header Block">👤 Contact</button>
+                  <button type="button" class="tool-btn" data-tool="summary" title="Insert Professional Summary">📝 Summary</button>
+                  <button type="button" class="tool-btn" data-tool="exp" title="Insert Experience Block">💼 Experience</button>
+                  <button type="button" class="tool-btn xyz-btn" data-tool="xyz" title="Insert Google XYZ Action Bullet">⚡ Google XYZ Bullet</button>
+                  <button type="button" class="tool-btn" data-tool="skills" title="Insert Technical Skills">🎯 Skills</button>
+                  <button type="button" class="tool-btn" data-tool="edu" title="Insert Education & Certifications">🎓 Education</button>
+                  <button type="button" class="tool-btn" data-tool="projects" title="Insert Key Projects">🏆 Projects</button>
+                </div>
+                <div class="toolbar-group">
+                  <span class="tb-label">FORMAT:</span>
+                  <button type="button" class="tool-btn fmt-btn" data-fmt="bold" title="Bold text (Ctrl+B)"><b>B</b></button>
+                  <button type="button" class="tool-btn fmt-btn" data-fmt="italic" title="Italic text (Ctrl+I)"><i>I</i></button>
+                  <button type="button" class="tool-btn fmt-btn" data-fmt="bullet" title="Bullet Point">• Bullet</button>
+                  <button type="button" class="tool-btn fmt-btn" data-fmt="h2" title="Section Heading">H2 Section</button>
+                  <button type="button" class="tool-btn fmt-btn" data-fmt="hr" title="Divider Line">― Line</button>
+                </div>
+                <div class="toolbar-group right-group">
+                  <button type="button" class="tool-btn danger-btn" id="clear-canvas-btn" title="Clear page and start 100% blank sheet">🧹 Clear Blank Sheet</button>
+                </div>
+              </div>
 
-PROFESSIONAL SUMMARY
-Experienced professional skilled in strategic project execution, data analysis, and cross-functional leadership...
-
-PROFESSIONAL EXPERIENCE
-Job Title — Company Name (2021 – Present)
-- Accomplished [X], as measured by [Y], by doing [Z]
-- Spearheaded team initiative that reduced costs by 20%
-- Optimized key operational processes...
-
-EDUCATION
-Degree Name — University Name (Graduation Year)"></textarea>
+              <textarea id="cv-text" placeholder="Start typing your resume from scratch, or click the toolbar buttons above (👤 Contact, 📝 Summary, 💼 Experience, ⚡ Google XYZ Bullet, 🎯 Skills) to build your ATS resume section by section..."></textarea>
+              
+              <div class="editor-stats-bar">
+                <span id="stat-words">Words: 0</span>
+                <span id="stat-bullets">Bullets: 0</span>
+                <span id="stat-metrics">Metrics Detected: 0</span>
+                <span class="stat-status">● Single-Column ATS Scannable</span>
+              </div>
             </div>
           </div>
 
@@ -149,62 +170,166 @@ Degree Name — University Name (Graduation Year)"></textarea>
             </div>
             <div class="score-meta">
               <span id="score-verdict" class="score-verdict">ATS SCANNABLE</span>
-              <span class="score-subtext">Overall ATS Resume Readiness Score</span>
+              <div id="mnc-tier-badge" class="mnc-tier-badge">🏆 TOP TIER MNC SHORTLIST</div>
+              <span class="score-subtext">Tier-1 MNC ATS Priority Weighted Score</span>
             </div>
           </div>
 
           <div class="breakdown-grid">
-            <div class="meter-card">
+            <div class="meter-card priority-card p1">
               <div class="meter-header">
-                <span>📐 Structure & Format</span>
-                <strong id="m-format">--%</strong>
-              </div>
-              <div class="meter-bar"><div id="bar-format" class="meter-fill" style="width: 0%"></div></div>
-            </div>
-
-            <div class="meter-card">
-              <div class="meter-header">
-                <span>⚡ Action Verbs</span>
-                <strong id="m-verbs">--%</strong>
-              </div>
-              <div class="meter-bar"><div id="bar-verbs" class="meter-fill" style="width: 0%"></div></div>
-            </div>
-
-            <div class="meter-card">
-              <div class="meter-header">
-                <span>📊 Quantified Metrics</span>
-                <strong id="m-impact">--%</strong>
-              </div>
-              <div class="meter-bar"><div id="bar-impact" class="meter-fill" style="width: 0%"></div></div>
-            </div>
-
-            <div class="meter-card">
-              <div class="meter-header">
-                <span>🔑 Keyword Match</span>
+                <span>🎯 Priority 1: Skills Match (35%)</span>
                 <strong id="m-keywords">--%</strong>
               </div>
               <div class="meter-bar"><div id="bar-keywords" class="meter-fill" style="width: 0%"></div></div>
+              <span id="p1-status" class="priority-status-text">Core Competency Check</span>
+            </div>
+
+            <div class="meter-card priority-card p2">
+              <div class="meter-header">
+                <span>📊 Priority 2: Experience & XYZ (30%)</span>
+                <strong id="m-impact">--%</strong>
+              </div>
+              <div class="meter-bar"><div id="bar-impact" class="meter-fill" style="width: 0%"></div></div>
+              <span id="p2-status" class="priority-status-text">Quantified Impact</span>
+            </div>
+
+            <div class="meter-card priority-card p3">
+              <div class="meter-header">
+                <span>🎓 Priority 3: Education & Certs (15%)</span>
+                <strong id="m-verbs">--%</strong>
+              </div>
+              <div class="meter-bar"><div id="bar-verbs" class="meter-fill" style="width: 0%"></div></div>
+              <span id="p3-status" class="priority-status-text">Credentials Verified</span>
+            </div>
+
+            <div class="meter-card priority-card p4">
+              <div class="meter-header">
+                <span>📐 Priority 4: Parsability (20%)</span>
+                <strong id="m-format">--%</strong>
+              </div>
+              <div class="meter-bar"><div id="bar-format" class="meter-fill" style="width: 0%"></div></div>
+              <span id="p4-status" class="priority-status-text">Single-Column Scannability</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BEST MATCHING ROLE ACCORDING TO SKILLS -->
+        <div id="role-recommendations-banner" class="role-rec-banner">
+          <div class="role-rec-header">
+            <div class="role-title-group">
+              <span class="role-sparkle-icon">📄</span>
+              <div>
+                <span class="role-badge-tag">YOUR CV ANALYSIS: TOP RECOMMENDED POSITION ACCORDING TO YOUR CV</span>
+                <h2 id="best-role-title" class="best-role-title">Loading Best Role Match...</h2>
+              </div>
+            </div>
+            <div class="role-match-score-pill">
+              <span>ROLE MATCH:</span>
+              <strong id="best-role-match-pct">--%</strong>
+            </div>
+          </div>
+
+          <p id="best-role-reason" class="best-role-reason"></p>
+
+          <div style="margin-bottom: 16px;">
+            <button id="banner-view-rec-sections-btn" class="btn-blue-highlight">✨ Jump to Section-Wise Recommended Improvements</button>
+          </div>
+
+          <div class="best-role-missing-box">
+            <h4>💡 Skills Missing to Reach 100% Match for <span id="best-role-name-tag">this Role</span>:</h4>
+            <div id="best-role-missing-chips" class="chip-container"></div>
+          </div>
+
+          <div class="top-roles-grid">
+            <h4 class="top-roles-label">TOP 3 RECOMMENDED ROLES FOR YOUR SKILLSET:</h4>
+            <div id="recommended-roles-cards" class="roles-cards-row"></div>
+          </div>
+        </div>
+
+        <!-- TARGET ROLE SKILL GAP CHECKLIST -->
+        <div id="target-role-gap-card" class="target-role-gap-box">
+          <div class="gap-card-header">
+            <div>
+              <h3>⚠️ Recruiter Checklist: Missing Skills to Fill <span id="target-role-title-tag">Target Role</span></h3>
+              <p id="target-role-verdict" class="gap-card-verdict"></p>
+            </div>
+            <div class="gap-match-pill">
+              <span>ROLE READINESS:</span>
+              <strong id="target-role-score">--%</strong>
+            </div>
+          </div>
+
+          <div class="gap-two-col">
+            <div class="gap-group matched">
+              <h4>✅ Skills You Currently Have for this Role</h4>
+              <div id="target-matched-skills" class="chip-container"></div>
+            </div>
+            <div class="gap-group missing">
+              <h4>⚠️ Missing Skills Required to Fill this Role (Click + to Add to Resume)</h4>
+              <div id="target-missing-skills" class="chip-container"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRIORITY 1: SKILLS SCANNER BOX -->
+        <div class="mnc-skills-box">
+          <div class="mnc-skills-header">
+            <div>
+              <h3>🎯 MNC ATS Priority #1: Skills & Competency Scanner</h3>
+              <p>Top MNC systems (Workday, Taleo, iCIMS) rank candidates primarily by hard skills coverage.</p>
+            </div>
+            <div class="skills-match-badge">
+              <span>SKILL MATCH COVERAGE:</span>
+              <strong id="skill-match-pct">--%</strong>
+            </div>
+          </div>
+
+          <div class="skills-two-col">
+            <div class="skill-group matched">
+              <h4>✅ Matched Skills (Detected in Resume)</h4>
+              <div id="matched-skills-list" class="chip-container"></div>
+            </div>
+            <div class="skill-group missing">
+              <h4>⚠️ Missing Critical Skills (Target JD / Role Gaps)</h4>
+              <div id="missing-skills-list" class="chip-container"></div>
             </div>
           </div>
         </div>
 
         <!-- SUMMARY STATEMENT -->
         <div class="summary-box">
-          <h3>📋 Executive AI Assessment</h3>
+          <h3>📋 Executive MNC Assessment Summary</h3>
           <p id="summary-text"></p>
         </div>
 
         <!-- TABS NAV -->
         <div class="tabs-nav">
-          <button class="tab-btn active" data-tab="paper">📄 Executive Paper Preview & PDF Export</button>
+          <button class="tab-btn active" data-tab="rec-sections">✨ Recommended Section-Wise Improvements</button>
+          <button class="tab-btn" data-tab="paper">📄 Executive Paper Preview & PDF Export</button>
+          <button class="tab-btn" data-tab="sections">📂 Parsed CV Sections & Upload</button>
           <button class="tab-btn" data-tab="bullets">⚡ Bullet Rewrites (Google XYZ)</button>
           <button class="tab-btn" data-tab="guide">💡 Real-Life ATS Guide</button>
           <button class="tab-btn" data-tab="overview">📊 Executive Audit</button>
           <button class="tab-btn" data-tab="keywords">🔑 Keywords & Match</button>
         </div>
 
+        <!-- TAB 0: RECOMMENDED SECTION-WISE IMPROVEMENTS -->
+        <div id="tab-rec-sections" class="tab-content active">
+          <div class="sections-intro-card" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3>✨ Recommended Section-Wise CV Enhancements</h3>
+                <p>Calculated section-by-section recommendations tailored to your uploaded CV and top recommended position match. Review recommendations for each section and click <strong>"⚡ Apply Recommendation to CV"</strong> to update your resume instantly.</p>
+              </div>
+              <button id="apply-all-recs-btn" class="btn-blue-highlight" style="padding: 10px 18px;">⚡ Apply All Recommendations to CV</button>
+            </div>
+          </div>
+          <div id="recommended-sections-container"></div>
+        </div>
+
         <!-- TAB 1: PAPER PREVIEW & DIRECT PDF EXPORT -->
-        <div id="tab-paper" class="tab-content active">
+        <div id="tab-paper" class="tab-content">
           <div class="paper-toolbar">
             <div class="toolbar-left">
               <button id="toolbar-new-upload-btn" class="btn-blue-highlight" style="background: var(--card); color: var(--text-primary); border: 1px solid var(--border);">🔄 Upload New File</button>
@@ -232,6 +357,81 @@ Degree Name — University Name (Graduation Year)"></textarea>
             </div>
             <div id="paper-document" class="paper-sheet tpl-harvard">
               <div id="paper-content" class="paper-body"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: SECTION-WISE CV BREAKDOWN & INTERNSHIPS -->
+        <div id="tab-sections" class="tab-content">
+          <div class="sections-breakdown-container">
+            <div class="sections-intro-card">
+              <h3>📂 Extracted CV Sections & Upload Breakdown</h3>
+              <p>Top MNC ATS parsers split your CV into distinct sections. Below is your uploaded CV parsed section-by-section (including Contact, Summary, Education, Internships, Work Experience, Technical Skills, Projects, and Certifications).</p>
+            </div>
+
+            <div class="sections-grid-layout">
+              <!-- CONTACT SECTION CARD -->
+              <div class="section-detail-card">
+                <div class="card-sec-header">
+                  <span>👤 CONTACT & IDENTIFICATION</span>
+                  <span class="sec-status-badge green">✓ ATS Header Verified</span>
+                </div>
+                <div id="sec-contact-body" class="sec-card-body"></div>
+              </div>
+
+              <!-- SUMMARY SECTION CARD -->
+              <div class="section-detail-card">
+                <div class="card-sec-header">
+                  <span>📝 EXECUTIVE PROFESSIONAL SUMMARY</span>
+                  <span class="sec-status-badge blue">⚡ Google XYZ Enhanced</span>
+                </div>
+                <div id="sec-summary-body" class="sec-card-body"></div>
+              </div>
+
+              <!-- EDUCATION SECTION CARD -->
+              <div class="section-detail-card">
+                <div class="card-sec-header">
+                  <span>🎓 EDUCATIONAL DETAILS & DEGREES</span>
+                  <span class="sec-status-badge green">✓ Degree Verified</span>
+                </div>
+                <div id="sec-education-body" class="sec-card-body"></div>
+              </div>
+
+              <!-- INTERNSHIPS SECTION CARD -->
+              <div class="section-detail-card">
+                <div class="card-sec-header">
+                  <span>🚀 INTERNSHIPS & TRAINEESHIP EXPERIENCE</span>
+                  <span class="sec-status-badge purple">💼 Practical Experience</span>
+                </div>
+                <div id="sec-internships-body" class="sec-card-body"></div>
+              </div>
+
+              <!-- WORK EXPERIENCE SECTION CARD -->
+              <div class="section-detail-card">
+                <div class="card-sec-header">
+                  <span>💼 WORK EXPERIENCE & IMPACT BULLETS</span>
+                  <span class="sec-status-badge blue">⚡ Google XYZ Quantified</span>
+                </div>
+                <div id="sec-experience-body" class="sec-card-body"></div>
+              </div>
+
+              <!-- TECHNICAL & SOFT SKILLS SECTION CARD -->
+              <div class="section-detail-card">
+                <div class="card-sec-header">
+                  <span>🎯 SKILLS, TOOLS & FRAMEWORKS</span>
+                  <span class="sec-status-badge green">✓ Priority #1 Scanned</span>
+                </div>
+                <div id="sec-skills-body" class="sec-card-body"></div>
+              </div>
+
+              <!-- PROJECTS & CERTIFICATIONS CARD -->
+              <div class="section-detail-card">
+                <div class="card-sec-header">
+                  <span>🏆 PROJECTS & CERTIFICATIONS</span>
+                  <span class="sec-status-badge gold">🏅 Verified Credentials</span>
+                </div>
+                <div id="sec-projects-body" class="sec-card-body"></div>
+              </div>
             </div>
           </div>
         </div>
